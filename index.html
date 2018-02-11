@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Postfix</title>
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+
+    * {
+      box-sizing: inherit;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      margin: 0;
+      padding: 20px;
+
+      background-color: #29dd66;
+
+      font-family: sans-serif;
+    }
+
+    #eq-form {
+      display: flex;
+      flex-direction: column;
+
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+    }
+
+    .input {
+      margin-bottom: 20px;
+      padding: 15px;
+
+      border: none;
+      border-radius: 2px;
+    }
+
+    .btn:focus {
+      border: none;
+      outline: none;
+    }
+
+    .btn {
+      padding: 10px;
+
+      cursor: pointer;
+      transition: all .1s ease;
+      text-transform: uppercase;
+
+      border: none;
+      box-shadow: 2px 2px 0 0 rgba(0, 0, 0, .5);
+
+      font-size: .9rem;
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+
+      box-shadow: 4px 4px 0 0 rgba(0, 0, 0, .5);
+    }
+
+    .btn:active {
+      transform: translate(1px, 1px);
+
+      box-shadow: 1px 1px 0 0 rgba(0, 0, 0, .5);
+    }
+
+    .result {
+      margin: 0;
+
+      font-size: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <form id="eq-form">
+    <input class="input" id="eq-input" type="text">
+    <input class="btn" value="Calculate" type="submit">
+  </form>
+
+  <p>Result</p>
+  <p class="result" id="result"></p>
+
+  <script>
+    const input = document.querySelector('#eq-input');
+    const form = document.querySelector('#eq-form');
+    const resultTag = document.querySelector('#result');
+
+    isNumber = number => {
+      return !isNaN(parseFloat(number));
+    }
+
+    doCalculation = (val1, val2, operator) => {
+      switch (operator) {
+        case '+':
+          return val1 + val2;
+          break;
+        case '*':
+          return val1 * val2;
+          break;
+        case '-':
+          return val2 - val1;
+          break;
+        case '/':
+          return val1 / val2;
+          break;
+        case '^':
+          return Math.pow(val2, val1);
+          break;
+        default:
+          break;
+      }
+    }
+
+    displayResult = result => {
+      resultTag.textContent = result;
+    }
+
+    calculate = (e) => {
+      e.preventDefault();
+      const numStack = [];
+      const eq = Array.from(input.value);
+
+      // loop through equation
+      eq.forEach(char => {
+        if (isNumber(char)) {
+          // If it's a number, push it to a number stack
+          numStack.push(char);
+        } else {
+          // if it's a operator, pop the last two numbers
+          // Don't forget about parseFloat. Otherwise javascript will assume it's a string.
+          const [val1, val2] = [parseFloat(numStack.pop()), parseFloat(numStack.pop())];
+          // Run the calculation
+          const result = doCalculation(val1, val2, char)
+          // push the result to the stack
+          numStack.push(result);
+        }
+      });
+
+      displayResult(numStack[0]);
+    }
+
+    form.addEventListener('submit', calculate);
+
+  </script>
+</body>
+
+</html>
