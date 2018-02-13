@@ -97,25 +97,38 @@
     const form = document.querySelector('#eq-form');
     const resultTag = document.querySelector('#result');
 
-    isNumber = number => {
+    function isNumber(number) {
       return !isNaN(parseFloat(number));
     }
 
-    doCalculation = (val1, val2, operator) => {
+    function displayResult(result) {
+      resultTag.textContent = result;
+    }
+
+    function displayCalculation(val1, val2, operator) {
+      resultTag.textContent = `${val1} ${operator} ${val2}`;
+    }
+
+    function doCalculation(val1, val2, operator) {
       switch (operator) {
         case '+':
+          displayCalculation(val1, val2, operator);
           return val1 + val2;
           break;
         case '*':
+          displayCalculation(val1, val2, operator);
           return val1 * val2;
           break;
         case '-':
+          displayCalculation(val2, val1, operator);
           return val2 - val1;
           break;
         case '/':
+          displayCalculation(val1, val2, operator);
           return val1 / val2;
           break;
         case '^':
+          displayCalculation(val2, val1, operator);
           return Math.pow(val2, val1);
           break;
         default:
@@ -123,35 +136,36 @@
       }
     }
 
-    displayResult = result => {
-      resultTag.textContent = result;
-    }
-
-    calculate = (e) => {
-      e.preventDefault();
+    function solveEquation(equation) {
       const numStack = [];
-      const eq = Array.from(input.value);
+      const eq = equation.split(" ");
 
       // loop through equation
-      eq.forEach(char => {
+      eq.forEach((char, index) => {
+
         if (isNumber(char)) {
           // If it's a number, push it to a number stack
           numStack.push(char);
         } else {
-          // if it's a operator, pop the last two numbers
+          // if it's an operator, pop the last two numbers
           // Don't forget about parseFloat. Otherwise javascript will assume it's a string.
           const [val1, val2] = [parseFloat(numStack.pop()), parseFloat(numStack.pop())];
           // Run the calculation
-          const result = doCalculation(val1, val2, char)
+          const result = doCalculation(val1, val2, char);
           // push the result to the stack
           numStack.push(result);
         }
-      });
 
-      displayResult(numStack[0]);
+        if (numStack.length === 1) {
+          displayResult(numStack[0]);
+        }
+      });
     }
 
-    form.addEventListener('submit', calculate);
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      solveEquation(input.value);
+    });
 
   </script>
 </body>
